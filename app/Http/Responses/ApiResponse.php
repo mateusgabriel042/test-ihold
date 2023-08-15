@@ -36,6 +36,7 @@ class ApiResponse implements Responsable
     public function _transformResponseWithPagination($collection)
     {
         return [
+            'links' => $collection->links(),
             'page' => $collection->currentPage(),
             'size' => $collection->perPage(),
             'total' => $collection->total(),

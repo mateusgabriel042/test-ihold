@@ -14,36 +14,22 @@ class ProductsContoller extends Controller
 {
 
     private $productRepository;
-    private $productCollection;
-
 
     public function __construct(ProductRepository $productRepository) {
         $this->productRepository = $productRepository;
 
     }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-    {
-        try {
-            $product = $this->productRepository->getProducts();
-            $responsable = new ApiResponse(Response::HTTP_OK, 'Produtos encontrados', true);
-            //return new ProductResource(Product::paginate(10));
-            //return new ProductCollection(Product::all());
-
-            $products = Product::all();
-
-            foreach($products as $product) {
-                dd($product->id, $product->name);
-            }
-            //return new ProductCollection(Product::all());
-
-
-            //return $responsable->toResponse($product);
-        } catch(\Exception $e) {
-            $responsable = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
-            return $responsable->toResponse($e);
+    public function index() {
+        try{
+            $products = $this->productRepository->getAllWithPaginate(['productStatus', 'merchant']);
+            $response = new ApiResponse(Response::HTTP_OK, 'Listagem de produtos bem-sucedida', true);
+            return $response->toResponse([
+                'products' => new ProductCollection($products),
+                'pagination' => $response->_transformResponseWithPagination($products),
+            ]);
+        } catch (\Exception $e) {
+            $response = new ApiResponse(RESPONSE::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage(), false);
+            return $response->toResponse([]);
         }
     }
 
@@ -66,12 +52,15 @@ class ProductsContoller extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(int $id)
     {
         try {
             $product = $this->productRepository->find($id);
-            $responsable = new ApiResponse(Response::HTTP_OK, 'Produto Encontrado');
-            return $responsable->toResponse($product);
+
+            $response = new ApiResponse(Response::HTTP_OK, 'Produto encontrado', true);
+            return $response->toResponse(
+                new ProductCollection($product)
+            );
         } catch(\Exception $e) {
             $responsable = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $responsable->toResponse($e);
@@ -82,13 +71,15 @@ class ProductsContoller extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
         try {
             $this->productRepository->update($id, $request->all());
             $product = $this->productRepository->find($id);
-            $responsable = new ApiResponse(Response::HTTP_OK, 'Produto atualizado com sucesso');
-            return $responsable->toResponse($product);
+            $response = new ApiResponse(Response::HTTP_OK, 'Produto encontrado', true);
+            return $response->toResponse(
+                new ProductCollection($product)
+            );
         } catch(\Exception $e) {
             $responsable = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $responsable->toResponse($e);
@@ -98,7 +89,7 @@ class ProductsContoller extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
         try {
             $this->productRepository->delete($id);

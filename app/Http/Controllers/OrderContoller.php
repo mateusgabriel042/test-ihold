@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Repositories\OrderRepository;
 use App\Repositories\OrderItemRepository;
+use App\Http\Resources\OrderResource;
+use App\Http\Resources\OrderCollection;
 use App\Http\Responses\ApiResponse;
 
 class OrderContoller extends Controller
@@ -25,15 +27,18 @@ class OrderContoller extends Controller
     public function index()
     {
         try {
-            $orders = $this->orderRepository->all(['customer', 'orderStatus', 'orderItem']);
-            $responsable = new ApiResponse(Response::HTTP_OK, 'Produto Encontrado');
-            return $responsable->toResponse($orders);
+            $orders = $this->orderRepository->getAllWithPaginate(['orderStatus', 'customer', 'orderItem']);
+            $response = new ApiResponse(Response::HTTP_OK, 'Produto Encontrado');
+            //return $responsable->toResponse($orders);
+            return $response->toResponse([
+                'orders' => new OrderCollection($orders),
+                'pagination' => $response->_transformResponseWithPagination($orders),
+            ]);
         } catch(\Exception $e) {
             $responsable = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $responsable->toResponse($e);
         }
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -65,23 +70,24 @@ class OrderContoller extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(int $id)
     {
         try {
-            $orders = $this->orderRepository->findByColumn('id', $id, ['customer', 'orderStatus', 'orderItem']);
-            $responsable = new ApiResponse(Response::HTTP_OK, 'Produto Encontrado');
-            return $responsable->toResponse($orders);
+            $order = $this->orderRepository->findByColumn('id', $id, ['customer', 'orderStatus', 'orderItem']);
+            $response = new ApiResponse(Response::HTTP_OK, 'Produto Encontrado');
+            return $response->toResponse(
+                new OrderCollection($order)
+            );
         } catch(\Exception $e) {
             $responsable = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $responsable->toResponse($e);
         }
     }
 
-
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
         try {
             if(!$request->order) {
@@ -99,8 +105,10 @@ class OrderContoller extends Controller
             $this->orderItemRepository->deleteByColumn('order_id', $id);
 
             $this->orderItemRepository->saveMultipleItems($order, $request->products);
-            $responsable = new ApiResponse(Response::HTTP_CREATED, 'Pedido inserido com sucesso');
-            return $responsable->toResponse($order);
+            $response = new ApiResponse(Response::HTTP_CREATED, 'Pedido inserido com sucesso');
+            return $response->toResponse(
+                new OrderCollection($order)
+            );
         } catch(\Exception $e) {
             $responsable = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $responsable->toResponse($e);
@@ -110,7 +118,7 @@ class OrderContoller extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
         //
     }

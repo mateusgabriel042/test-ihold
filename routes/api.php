@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\ProductsContoller;
+use App\Http\Controllers\OrderContoller;
 
 Route::group(['prefix' => 'auth'], function(){
     Route::post('/register', [AuthController::class, 'register']);

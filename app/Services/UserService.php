@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Requests\UserUpdateRequest;
+use App\Repositories\BaseRepository;
 use Illuminate\Support\Facades\Hash;
 
 class UserService extends BaseRepository
