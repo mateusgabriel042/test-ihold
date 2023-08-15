@@ -6,7 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use App\Services\UserService;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 class RolesSeeder extends Seeder
 {
@@ -53,7 +53,7 @@ class RolesSeeder extends Seeder
             'email' => 'admin123@example.com',
             'password' => Hash::make('ihold#1234'),
         ];
-        $user1 = UserService::createUserIfNotExist($dataUser1);
+        $user1 = UserRepository::createUserIfNotExist($dataUser1);
         $user1->assignRole($roleAdmin);
 
         $dataUser1 = [
@@ -62,7 +62,7 @@ class RolesSeeder extends Seeder
             'email' => 'admin123@example.com',
             'password' => Hash::make('ihold#1234'),
         ];
-        $user1 = UserService::createUserIfNotExist($dataUser1);
+        $user1 = UserRepository::createUserIfNotExist($dataUser1);
         $user1->assignRole($roleAdmin);
     }
 }
