@@ -13,5 +13,10 @@ class ProductRepository extends BaseRepository
         parent::__construct($product);
     }
 
+    public function getProducts()
+    {
+        return Product::paginate(10);
+    }
+
 
 }

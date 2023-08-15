@@ -42,11 +42,11 @@ class ApiResponse implements Responsable
 
     private function _transformResponseWithPagination($pagination)
     {
+
         return response()->json([
-            'page' => $pagination->currentPage(),
-            'size' => $pagination->perPage(),
-            'total' => $pagination->total(),
-            'data' => $pagination->items()
+            'code' => $this->code_response,
+            'message' => $this->message,
+            'data' => $pagination
         ]);
     }
 }
