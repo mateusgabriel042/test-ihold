@@ -20,7 +20,10 @@ class UserController extends Controller
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
-        $this->middleware(['permission:read-users'])->only('index');
+        $this->middleware(['permission:create-users'])->only('store');
+        $this->middleware(['permission:read-users'])->only(['index', 'seatch', 'show']);
+        $this->middleware(['permission:update-users'])->only('update');
+        $this->middleware(['permission:delete-users'])->only(['destroy', 'multipleDeletion']);
     }
     
     public function index() {
@@ -45,11 +48,6 @@ class UserController extends Controller
                 'users' => new UserCollection($users),
                 'pagination' => $response->_transformResponseWithPagination($users),
             ]);
-
-            return $this->success([
-                'users' => new UserCollection($users),
-                'pagination' => $response->_transformResponseWithPagination($users),
-            ],  'Listagem de usuários realizada com sucesso!');
         } catch (\Exception $e) {
             $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $response->toResponse([]);
@@ -66,9 +64,7 @@ class UserController extends Controller
             $user = $this->userRepository->save($data);
 
             $response = new ApiResponse(Response::HTTP_OK, 'Listagem de usuários bem-sucedida');
-            return $response->toResponse([
-                'user' => new UserResource($user),
-            ]);
+            return $response->toResponse(new UserResource($user));
         } catch (\Exception $e) {
             $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $response->toResponse([]);
@@ -94,14 +90,12 @@ class UserController extends Controller
         
         try {
             $data = $request->all();
-            if($data['password'] != null && $data['password'] != ''){
+            if($data['password'] != null && $data['password'] != '')
                 $data['password'] = Hash::make('ihold#1234');
-            }
+            
             $user = $this->userRepository->update($id, $data);
             $response = new ApiResponse(Response::HTTP_OK, 'Usuário atualizado com sucesso');
-            return $response->toResponse([
-                'user' => new UserResource($user)
-            ]);
+            return $response->toResponse(new UserResource($user));
         } catch(\Exception $e) {
             $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $response->toResponse($e);

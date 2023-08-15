@@ -7,42 +7,54 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Requests\UserLoginRequest;
 use Illuminate\Support\Facades\Auth;
-use App\Services\UserService;
+use App\Repositories\UserRepository;
 use App\Http\Responses\ApiResponse;
+use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
-    private $userService;
+    private $userRepository;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserRepository $userRepository)
     {
-        $this->userService = $userService;
+        $this->userRepository = $userRepository;
     }
 
     public function login(UserLoginRequest $request) {
         if (isset($request->validator) && $request->validator->fails())
             return $this->verifyValidation($request);
 
-    	$dataUser = $request->all();
-        
-        if (!Auth::attempt($dataUser)) {
-            return $this->error('Credenciais não encontradas.', 401);
+        try {
+            $dataUser = $request->all();
+            
+            if (!Auth::attempt($dataUser)) {
+                return $this->error('Credenciais não encontradas.', 401);
+            }
+
+            $user = $this->userRepository->findByColumnFirst('id', auth()->user()->id);
+
+            $response = new ApiResponse(Response::HTTP_OK, 'Operação bem-sucedida');
+
+            return $response->toResponse([
+                'user'  => $user,
+                'token' => $user->createToken('API Token')->plainTextToken,
+            ]);
+
+        } catch (\Exception $e) {
+            $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+            return $response->toResponse([]);
         }
-
-        $user = $this->userService->findByColumnFirst('id', auth()->user()->id);
-
-        $response = new ApiResponse('200', 'Operação bem-sucedida', false);
-
-        return $response->toResponse([
-            'user'  => $user,
-            'token' => $user->createToken('API Token')->plainTextToken,
-        ]);
     }
 
     public function logout(){
-        Auth::user()->tokens->each->delete();
-        // Auth::user()->currentAccessToken()->delete();
-        $response = new ApiResponse('200', 'Operação bem-sucedida', false);
-        return $response->toResponse([]);
+        try {
+            Auth::user()->tokens->each->delete();
+            // Auth::user()->currentAccessToken()->delete();
+            $response = new ApiResponse(Response::HTTP_OK, 'Logout realizado com sucesso!');
+            return $response->toResponse([]);
+        } catch (\Exception $e) {
+            $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+            return $response->toResponse([]);
+        }
     }
 }
