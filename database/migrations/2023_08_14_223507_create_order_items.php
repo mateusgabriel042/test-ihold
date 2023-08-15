@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained();
             $table->double('quantity', 8, 2);
             $table->double('sales_price', 8, 2);
-
             $table->timestamps();
         });
     }

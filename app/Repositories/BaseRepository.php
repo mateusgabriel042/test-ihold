@@ -18,8 +18,8 @@ class BaseRepository
             return $this->model->with($relations)->get();
         }
 
-        return $this->model->all(); 
-      
+        return $this->model->all();
+
     }
 
     public function query()
@@ -54,7 +54,6 @@ class BaseRepository
 
     public function findByColumnFirst(string $column, $value, array $relations = [])
     {
-        
 
         if($relations)
         {
@@ -98,7 +97,12 @@ class BaseRepository
 
     public function delete(int $id): bool
     {
-        return $this->model->delete($id);
+        return $this->model->find($id)->delete();
+    }
+
+    public function deleteByColumn(string $column, string $value): bool
+    {
+        return $this->model->where($column, $value)->delete();
     }
 
     public function updateOrCreate(array $attributes)
