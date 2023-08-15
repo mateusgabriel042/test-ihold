@@ -9,15 +9,12 @@ use App\Http\Requests\UserRegisterRequest;
 use App\Http\Requests\UserUpdateRequest;
 use Illuminate\Support\Facades\Hash;
 
-class UserService extends AbstractService
+class UserService extends BaseRepository
 {
 
-  private $model;
-
-  public function __construct($model)
+  public function __construct()
   {
-    parent::__construct($model);
-    $this->model = $model;
+    parent::__construct(new User());
   }
 
   public static function createUserIfNotExist($data)
@@ -30,12 +27,12 @@ class UserService extends AbstractService
     return $user;
   }
 
-  public function delete($id)
+  /*public function delete($id)
   {
     $user = $this->find($id);
     $user->delete();
     return $user;
-  }
+  }*/
 
   public function multipleDeletion($ids = [])
   {

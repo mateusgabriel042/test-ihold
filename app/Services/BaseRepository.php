@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Services;
 
 class BaseRepository
 {
@@ -20,6 +20,17 @@ class BaseRepository
 
         return $this->model->all(); 
       
+    }
+
+    public function multipleDeletion($ids = [])
+    {
+        $result = $this->model->destroy($ids);
+        return $result;
+    }
+
+    public function getAllWithPaginate($relations = [])
+    {
+        return $this->model->with($relations)->orderBy('created_at', 'DESC')->paginate(20);
     }
 
     public function query()
@@ -54,12 +65,8 @@ class BaseRepository
 
     public function findByColumnFirst(string $column, $value, array $relations = [])
     {
-        
-
         if($relations)
-        {
             return $this->model->with($relations)->where($column, $value)->first();
-        }
         return $this->model->where($column, $value)->first();
     }
 

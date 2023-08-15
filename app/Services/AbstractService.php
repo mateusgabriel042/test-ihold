@@ -43,7 +43,7 @@ class AbstractService
 
   public function find($id, $relations = [])
   {
-    return $this->model->with($relations)->findOrFail($id);
+    return $this->model->with($relations)->find($id);
   }
 
   public function search($option, $value, $relations = [])
