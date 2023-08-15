@@ -7,14 +7,11 @@ class ApiResponse implements Responsable
 {
     protected $code_response;
     protected $message;
-    protected $is_pagination;
 
-
-    public function __construct($code_response, $message, $is_pagination = false)
+    public function __construct($code_response, $message)
     {
         $this->code_response = $code_response;
         $this->message = $message;
-        $this->is_pagination = $is_pagination;
     }
 
     public function toResponse($response)
@@ -29,10 +26,6 @@ class ApiResponse implements Responsable
             ], $this->code_response);
         }
 
-        if ($this->is_pagination) {
-            return $this->_transformResponseWithPagination($response);
-        }
-
         return response()->json([
             'code' => $this->code_response,
             'message' => $this->message,
@@ -40,13 +33,12 @@ class ApiResponse implements Responsable
         ], $this->code_response);
     }
 
-    private function _transformResponseWithPagination($pagination)
+    public function _transformResponseWithPagination($collection)
     {
-
-        return response()->json([
-            'code' => $this->code_response,
-            'message' => $this->message,
-            'data' => $pagination
-        ]);
+        return [
+            'page' => $collection->currentPage(),
+            'size' => $collection->perPage(),
+            'total' => $collection->total(),
+        ];
     }
 }
