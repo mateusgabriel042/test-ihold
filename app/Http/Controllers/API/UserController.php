@@ -8,43 +8,51 @@ use App\Http\Requests\UserRegisterRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserCollection;
-use App\Services\UserService;
+use App\Repositories\UserRepository;
 use App\Http\Responses\ApiResponse;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
-    private $userService;
+    private $userRepository;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserRepository $userRepository)
     {
-        $this->userService = $userService;
+        $this->userRepository = $userRepository;
         $this->middleware(['permission:read-users'])->only('index');
     }
     
     public function index() {
         try{
-            $users = $this->userService->getAllWithPaginate();
-            $response = new ApiResponse('200', 'Listagem de usuários bem-sucedida', true);
+            $users = $this->userRepository->getAllWithPaginate();
+            $response = new ApiResponse(Response::HTTP_OK, 'Listagem de usuários bem-sucedida');
             return $response->toResponse([
                 'users' => new UserCollection($users),
                 'pagination' => $response->_transformResponseWithPagination($users),
             ]);
         } catch (\Exception $e) {
-            $response = new ApiResponse(500, $e->getMessage(), false);
+            $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $response->toResponse([]);
         }
     }
 
-    /*public function search($option, $value) {
+    public function search($option, $value) {
         try {
-            $users = $this->userService->search($option, $value);
+            $users = $this->userRepository->findByColumnLike($option, $value);
+            $response = new ApiResponse(Response::HTTP_OK, 'Listagem de usuários bem-sucedida');
+            return $response->toResponse([
+                'users' => new UserCollection($users),
+                'pagination' => $response->_transformResponseWithPagination($users),
+            ]);
 
             return $this->success([
                 'users' => new UserCollection($users),
-                'pagination' => ['pages' => $users->lastPage()],
+                'pagination' => $response->_transformResponseWithPagination($users),
             ],  'Listagem de usuários realizada com sucesso!');
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), $e->getCode());
+            $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+            return $response->toResponse([]);
         }
     }
 
@@ -53,39 +61,30 @@ class UserController extends Controller
             return $this->verifyValidation($request);
 
         try {
-            $user = $this->userService->create($request);
-        
-            $role = $request->input('role_id');//id of role
+            $data = $request->all();
+            $data['password'] = Hash::make('ihold#1234');
+            $user = $this->userRepository->save($data);
 
-            if($role != null){
-                $user->roles()->attach($role);
-                $user->save();
-            }
-
-            $permissions = $request->input('permissions');//id of permissions
-
-            if($permissions != null){
-                foreach ($permissions as $item) {
-                    $user->permissions()->attach($item['id_permission']);
-                }
-            }
-
-            return $this->success([
+            $response = new ApiResponse(Response::HTTP_OK, 'Listagem de usuários bem-sucedida');
+            return $response->toResponse([
                 'user' => new UserResource($user),
             ]);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), $e->getCode());
+            $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+            return $response->toResponse([]);
         }
     }
 
     public function show($id) {
         try {
-            $user = $this->userService->find($id);
-            return $this->success([
-                'user' => new UserResource($user),
+            $user = $this->userRepository->find($id);
+            $response = new ApiResponse(Response::HTTP_OK, 'Usuário Encontrado');
+            return $response->toResponse([
+                'user' => new UserResource($user)
             ]);
-        } catch (\Exception $e) {
-            return $this->error($e->getMessage(), $e->getCode());
+        } catch(\Exception $e) {
+            $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+            return $response->toResponse($e);
         }
     }
 
@@ -94,50 +93,39 @@ class UserController extends Controller
             return $this->verifyValidation($request);
         
         try {
-            $user = $this->userService->update($request, $id);
-        
-            $role = $request->input('role_id');//id of role
-
-            if($role != null ){
-                $user->roles()->attach($role);
+            $data = $request->all();
+            if($data['password'] != null && $data['password'] != ''){
+                $data['password'] = Hash::make('ihold#1234');
             }
-
-            $permissions = $request->input('permissions');//id of permissions
-
-            if($permissions != null){
-                foreach ($permissions as $item) {
-                    $user->permissions()->attach($item['id_permission']);
-                }
-            }
-
-            return $this->success([
-                'user' => new UserResource($user),
+            $user = $this->userRepository->update($id, $data);
+            $response = new ApiResponse(Response::HTTP_OK, 'Usuário atualizado com sucesso');
+            return $response->toResponse([
+                'user' => new UserResource($user)
             ]);
-        } catch (\Exception $e) {
-            return $this->error($e->getMessage(), $e->getCode());
+        } catch(\Exception $e) {
+            $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+            return $response->toResponse($e);
         }
     }
 
-    */
-
     public function destroy($id) {
         try{
-            $this->userService->delete($id);
-            $response = new ApiResponse('200', 'Registro deletado com sucesso!', false);
+            $this->userRepository->delete($id);
+            $response = new ApiResponse(Response::HTTP_OK, 'Registro deletado com sucesso!');
             return $response->toResponse([]);
         } catch (\Exception $e) {
-            $response = new ApiResponse(500, $e->getMessage(), false);
+            $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $response->toResponse([]);
         }
     }
     
     public function multipleDeletion(Request $request) {
         try{
-            $result = $this->userService->multipleDeletion($request->get('ids'));
-            $response = new ApiResponse('200', 'Registros deletados com sucesso!', false);
+            $result = $this->userRepository->multipleDeletion($request->get('ids'));
+            $response = new ApiResponse(Response::HTTP_OK, 'Registros deletados com sucesso!');
             return $response->toResponse([]);
         } catch (\Exception $e) {
-            $response = new ApiResponse(500, $e->getMessage(), false);
+            $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $response->toResponse([]);
         }
     }

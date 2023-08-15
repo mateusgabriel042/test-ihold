@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Repositories;
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -10,7 +10,7 @@ use App\Http\Requests\UserUpdateRequest;
 use App\Repositories\BaseRepository;
 use Illuminate\Support\Facades\Hash;
 
-class UserService extends BaseRepository
+class UserRepository extends BaseRepository
 {
 
   public function __construct()
