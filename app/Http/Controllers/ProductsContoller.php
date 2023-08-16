@@ -6,9 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Repositories\ProductRepository;
 use App\Http\Responses\ApiResponse;
-use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductCollection;
-use App\Models\Product;
+use App\Http\Requests\ProductRequest;
 
 class ProductsContoller extends Controller
 {
@@ -37,7 +36,7 @@ class ProductsContoller extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
         try {
             $product = $this->productRepository->save($request->all());
@@ -57,7 +56,7 @@ class ProductsContoller extends Controller
         try {
             $product = $this->productRepository->find($id);
 
-            $response = new ApiResponse(Response::HTTP_OK, 'Produto encontrado', true);
+            $response = new ApiResponse(Response::HTTP_OK, 'Produto encontrado');
             return $response->toResponse(
                 new ProductCollection($product)
             );
@@ -71,12 +70,12 @@ class ProductsContoller extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id)
+    public function update(ProductRequest $request, int $id)
     {
         try {
             $this->productRepository->update($id, $request->all());
             $product = $this->productRepository->find($id);
-            $response = new ApiResponse(Response::HTTP_OK, 'Produto encontrado', true);
+            $response = new ApiResponse(Response::HTTP_OK, 'Produto atualizado');
             return $response->toResponse(
                 new ProductCollection($product)
             );

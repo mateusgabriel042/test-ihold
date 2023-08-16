@@ -28,13 +28,6 @@ class UserRepository extends BaseRepository
     return $user;
   }
 
-  /*public function delete($id)
-  {
-    $user = $this->find($id);
-    $user->delete();
-    return $user;
-  }*/
-
   public function multipleDeletion($ids = [])
   {
     $result = User::destroy($ids);

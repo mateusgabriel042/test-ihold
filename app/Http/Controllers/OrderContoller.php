@@ -29,7 +29,6 @@ class OrderContoller extends Controller
         try {
             $orders = $this->orderRepository->getAllWithPaginate(['orderStatus', 'customer', 'orderItem']);
             $response = new ApiResponse(Response::HTTP_OK, 'Produto Encontrado');
-            //return $responsable->toResponse($orders);
             return $response->toResponse([
                 'orders' => new OrderCollection($orders),
                 'pagination' => $response->_transformResponseWithPagination($orders),

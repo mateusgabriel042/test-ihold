@@ -20,9 +20,9 @@ class UserController extends Controller
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
-        $this->middleware(['permission:read-users'])->only('index');
+        //$this->middleware(['permission:read-users'])->only('index');
     }
-    
+
     public function index() {
         try{
             $users = $this->userRepository->getAllWithPaginate();
@@ -65,7 +65,7 @@ class UserController extends Controller
             $data['password'] = Hash::make('ihold#1234');
             $user = $this->userRepository->save($data);
 
-            $response = new ApiResponse(Response::HTTP_OK, 'Listagem de usuários bem-sucedida');
+            $response = new ApiResponse(Response::HTTP_OK, 'Usuario Inserido');
             return $response->toResponse([
                 'user' => new UserResource($user),
             ]);
@@ -91,7 +91,7 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request, $id) {
         if (isset($request->validator) && $request->validator->fails())
             return $this->verifyValidation($request);
-        
+
         try {
             $data = $request->all();
             if($data['password'] != null && $data['password'] != ''){
@@ -118,7 +118,7 @@ class UserController extends Controller
             return $response->toResponse([]);
         }
     }
-    
+
     public function multipleDeletion(Request $request) {
         try{
             $result = $this->userRepository->multipleDeletion($request->get('ids'));

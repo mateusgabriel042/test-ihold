@@ -7,14 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Requests\UserLoginRequest;
 use Illuminate\Support\Facades\Auth;
-use App\Services\UserService;
+use App\Repositories\UserRepository;
 use App\Http\Responses\ApiResponse;
 
 class AuthController extends Controller
 {
     private $userService;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserRepository $userService)
     {
         $this->userService = $userService;
     }
@@ -24,7 +24,7 @@ class AuthController extends Controller
             return $this->verifyValidation($request);
 
     	$dataUser = $request->all();
-        
+
         if (!Auth::attempt($dataUser)) {
             return $this->error('Credenciais não encontradas.', 401);
         }

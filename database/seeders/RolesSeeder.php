@@ -15,7 +15,7 @@ class RolesSeeder extends Seeder
      */
     public function run(): void
     {
-        
+
         $permissions[0] = Permission::create(['name' => 'create-users']);
         $permissions[1] = Permission::create(['name' => 'read-users']);
         $permissions[2] = Permission::create(['name' => 'update-users']);
@@ -59,7 +59,7 @@ class RolesSeeder extends Seeder
         $dataUser1 = [
             'full_name' => 'Rinaldo Peligrineli',
             'is_admin' => true,
-            'email' => 'admin123@example.com',
+            'email' => 'admin124@example.com',
             'password' => Hash::make('ihold#1234'),
         ];
         $user1 = UserRepository::createUserIfNotExist($dataUser1);
