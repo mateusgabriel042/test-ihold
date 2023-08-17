@@ -55,9 +55,7 @@ class MerchantController extends Controller
     }
 
     public function store(MerchantRegisterRequest $request) {
-        if (isset($request->validator) && $request->validator->fails())
-            return $this->verifyValidation($request);
-
+        
         try {
             $merchant = $this->merchantRepository->save($request->all());
 
@@ -83,8 +81,6 @@ class MerchantController extends Controller
     }
 
     public function update(MerchantUpdateRequest $request, int $id) {
-        if (isset($request->validator) && $request->validator->fails())
-            return $this->verifyValidation($request);
         
         try {
             $this->merchantRepository->update($id, $request->all());

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('merchant_name');
             $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 
