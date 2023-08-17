@@ -93,7 +93,8 @@ class UserController extends Controller
             if($data['password'] != null && $data['password'] != '')
                 $data['password'] = Hash::make($data['password']);
             
-            $user = $this->userRepository->update($id, $data);
+            $this->userRepository->update($id, $data);
+            $user = $this->userRepository->find($id);
             $response = new ApiResponse(Response::HTTP_OK, 'Usuário atualizado com sucesso');
             return $response->toResponse(new UserResource($user));
         } catch(\Exception $e) {
