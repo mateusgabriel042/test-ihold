@@ -83,9 +83,9 @@ class BaseRepository
     {
         if($relations)
         {
-            return $this->model->with($relations)->where($column, 'like', '%'. $value. '%')->get();
+            return $this->model->with($relations)->where($column, 'like', '%'. $value. '%')->paginate(20);
         }
-        return $this->model->where($column, 'like', '%'. $value. '%')->get();
+        return $this->model->where($column, 'like', '%'. $value. '%')->paginate(20);
     }
 
     public function save(array $attributes)
