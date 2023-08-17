@@ -19,7 +19,7 @@ class MerchantCollection extends ResourceCollection
                 'id' => $merchant->id,
                 'merchant_name' => $merchant->merchant_name,
                 'user_id' => $merchant->user_id,
-                'user' => $merchant->user,
+                'user' => new UserResource($merchant->user),
             ];
         });
     }

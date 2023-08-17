@@ -18,7 +18,7 @@ class MerchantResource extends JsonResource
             'id' => $this->id,
             'merchant_name' => $this->merchant_name,
             'user_id' => $this->user_id,
-            'user' => $this->user,
+            'user' => new UserResource($this->user),
         ];
     }
 }
