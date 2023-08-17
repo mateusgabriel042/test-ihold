@@ -12,8 +12,15 @@ class UserCollection extends ResourceCollection
      *
      * @return array<int|string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray($request)
     {
-        return parent::toArray($request);
+        return $this->collection->transform(function ($user) {
+            return [
+                'id' => $user->id,
+                'full_name' => $user->full_name,
+                'email' => $user->email,
+                'is_admin' => $user->is_admin,
+            ];
+        });
     }
 }
