@@ -6,12 +6,40 @@ info:
 servers:
   - url: /api
 paths:
+  /auth/login:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Auth
+      summary: Login
+      description: Make Login
+      operationId: makeLogin
+      requestBody:
+        description: Auth payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthLogin'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCreatedSuccess'
+        500:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
   /products:
     get:
       tags:
         - Products
-      #security:
-      #  - bearerAuth: []
+      security:
+        - bearerAuth: []
       summary: Get Products
       description: Get Products
       operationId: indexProducts
@@ -22,7 +50,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IndexVisitorResponseSucess'
+                $ref: '#/components/schemas/IndexProductResponseSucess'
         500:
           description: error
           content:
@@ -34,17 +62,17 @@ paths:
         - bearerAuth: []
       tags:
         - Products
-      summary: Insert a new visitor
-      description: Insert a new visitor
-      operationId: addVisitor
+      summary: Insert a new Product
+      description: Insert a new Product
+      operationId: addProduct
       requestBody:
-        description: Visitor payload
+        description: Product payload
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StoreVisitor'
+              $ref: '#/components/schemas/StoreProduct'
       responses:
-        201:
+        200:
           description: successful operation
           content:
             application/json:
@@ -62,23 +90,23 @@ paths:
         - Products
       security:
         - bearerAuth: []
-      summary: Update a visitor
-      description: Update a visitor
-      operationId: updateVisitor
+      summary: Update a Products
+      description: Update a products
+      operationId: updateProducts
       parameters:
         - in: path
-          name: visitorId
+          name: productId
           schema:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
           required: true
-          description: UUID of the visitor to update
+          description: ID of the product to update
       requestBody:
         description: Visitor payload
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateVisitor'
+              $ref: '#/components/schemas/UpdateProduct'
       responses:
         200:
           description: successful operation
@@ -92,36 +120,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
-    /products/{productId}:
-      get:
-        tags:
-          - Products
-        security:
-          - bearerAuth: []
-        summary: Show a visitor
-        description: Show full data of a specific visitor
-        operationId: showVisitor
-        parameters:
-          - in: path
-            name: visitorId
-            schema:
-              type: string
-              format: uuid
-            required: true
-            description: UUID of the event to show
-        responses:
-          200:
-            description: successful operation
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/ApiResponseOkSuccess'
-          500:
-            description: error
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/ApiResponseError'
+    get:
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      summary: Show a visitor
+      description: Show full data of a specific visitor
+      operationId: showVisitor
+      parameters:
+      - in: path
+        name: productId
+        schema:
+          type: integer
+          format: int64
+        required: true
+        description: ID of the product to edit
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOkSuccess'
+        500:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
     delete:
       tags:
         - Products
@@ -132,12 +159,12 @@ paths:
       operationId: deleteVisitor
       parameters:
         - in: path
-          name: visitorId
+          name: productId
           schema:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
           required: true
-          description: UUID of the event to be deleted
+          description: ID of the product to be deleted
       responses:
         200:
           description: successful operation
@@ -151,44 +178,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
-  /visitor-categories:
+  /orders:
     get:
+      tags:
+        - Orders
       security:
         - bearerAuth: []
-      tags:
-        - visitor_category
-      summary: Get visitor categories
-      description: Get visitor categories
-      operationId: indexVisitorCategory
-      parameters:
-        - in: query
-          name: name
-          schema:
-            type: string
-        - in: query
-          name: order
-          schema:
-            type: string
-            enum:
-              - asc
-              - desc
-        - in: query
-          name: page
-          schema:
-            type: string
-            example: 1
-        - in: query
-          name: per_page
-          schema:
-            type: string
-            example: 15
+      summary: Get Orders
+      description: Get Orders
+      operationId: indexOrders
       responses:
         200:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IndexVisitorCategoryResponseSucess'
+                $ref: '#/components/schemas/IndexOrdersResponseSucess'
         500:
           description: error
           content:
@@ -199,18 +204,18 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - visitor_category
-      summary: Insert a new visitor category
-      description: Insert a new visitor category
-      operationId: addVisitorCategory
+        - Orders
+      summary: Insert a new Orders
+      description: Insert a new Orders
+      operationId: addOrders
       requestBody:
-        description: Visitor category payload
+        description: Orders payload
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StoreVisitorCategory'
+              $ref: '#/components/schemas/StoreOrder'
       responses:
-        201:
+        200:
           description: successful operation
           content:
             application/json:
@@ -222,197 +227,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
-  /visitor-categories/{categoryId}:
-    put:
-      security:
-        - bearerAuth: []
-      tags:
-        - visitor_category
-      summary: Update a visitor category
-      description: Update a visitor category
-      operationId: updateVisitorCategory
-      parameters:
-        - in: path
-          name: categoryId
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: UUID of the visitor category to update
-      requestBody:
-        description: Visitor category payload
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StoreVisitorCategory'
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseOkSuccess'
-        500:
-          description: error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-    get:
-      security:
-        - bearerAuth: []
-      tags:
-        - visitor_category
-      summary: Show a visitor category
-      description: Show full data of a specific visitor category
-      operationId: showVisitorCategory
-      parameters:
-        - in: path
-          name: categoryId
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: UUID of the visitor category to show
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseOkSuccess'
-        500:
-          description: error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-    delete:
-      security:
-        - bearerAuth: []
-      tags:
-        - visitor_category
-      summary: Delete a visitor category
-      description: Endpoint to remove a visitor category
-      operationId: deleteVisitorCategory
-      parameters:
-        - in: path
-          name: categoryId
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: UUID of the visitor category to be deleted
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseOkSuccess'
-        500:
-          description: error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-  /events:
-    get:
-      tags:
-        - event
-      security:
-        - bearerAuth: []
-      summary: Get events
-      description: Get events
-      operationId: indexEvent
-      parameters:
-        - in: query
-          name: title
-          schema:
-            type: string
-        - in: query
-          name: initial_date
-          schema:
-            type: string
-            example: "2022-06-22 19:10:25"
-        - in: query
-          name: final_date
-          schema:
-            type: string
-            example: "2022-06-22 19:11:25"
-        - in: query
-          name: send_notification
-          schema:
-            type: boolean
-            example: false
-        - in: query
-          name: created_user_id
-          schema:
-            type: string
-            format: uuid
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseOkSuccess'
-        500:
-          description: error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-    post:
-      tags:
-        - event
-      security:
-        - bearerAuth: []
-      summary: Insert a new event
-      description: Insert a new event
-      operationId: addAnEvent
-      requestBody:
-        description: Event payload
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StoreEvent'
-      responses:
-        201:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseCreatedSuccess'
-        500:
-          description: error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-  /events/{eventId}:
+  /orders/{orderId}:
     put:
       tags:
-        - event
+        - Orders
       security:
         - bearerAuth: []
-      summary: Update an event
-      description: Update an event
-      operationId: updateAnEvent
+      summary: Update a Products
+      description: Update a Order
+      operationId: updateOrders
       parameters:
         - in: path
-          name: eventId
+          name: orderId
           schema:
-            type: string
-            format: uuid
+            type: integer
+            format: int64
           required: true
-          description: UUID of the event to update
+          description: ID of the order to update
       requestBody:
-        description: Event payload
+        description: Order payload
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateEvent'
+              $ref: '#/components/schemas/UpdateOrder'
       responses:
         200:
           description: successful operation
@@ -428,20 +265,20 @@ paths:
                 $ref: '#/components/schemas/ApiResponseError'
     get:
       tags:
-        - event
+        - Orders
       security:
         - bearerAuth: []
-      summary: Show an event
-      description: Show full data of a specific event
-      operationId: showAnEvent
+      summary: Show a order
+      description: Show full data of a specific order
+      operationId: showOrder
       parameters:
-        - in: path
-          name: eventId
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: UUID of the event to show
+      - in: path
+        name: orderId
+        schema:
+          type: integer
+          format: int64
+        required: true
+        description: ID of the order to edit
       responses:
         200:
           description: successful operation
@@ -455,249 +292,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
-    delete:
-      tags:
-        - event
-      security:
-        - bearerAuth: []
-      summary: Delete an event
-      description: Endpoint to remove an Event
-      operationId: deleteAnEvent
-      parameters:
-        - in: path
-          name: eventId
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: UUID of the event to be deleted
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseOkSuccess'
-        500:
-          description: error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-  /plans:
-    get:
-      tags:
-        - plans
-      security:
-        - bearerAuth: []
-      summary: Get plans
-      description: Get plans
-      operationId: indexPlan
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IndexPlanResponseSucess'
-        500:
-          description: error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-  /service-status:
-    get:
-      tags:
-        - service_status
-      security:
-        - bearerAuth: []
-      summary: Get services status
-      description: Get services status
-      operationId: indexServiceStatus
-      parameters:
-        - in: query
-          name: order
-          schema:
-            type: string
-            enum:
-              - asc
-              - desc
-        - in: query
-          name: per_page
-          schema:
-            type: string
-            example: 15
-        - in: query
-          name: page
-          schema:
-            type: string
-            example: 1
-        - in: query
-          name: name
-          schema:
-            type: string
-            example: cancelado
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IndexPlanResponseSucess'
-        500:
-          description: error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-
-  /service-status/{serviceStatusId}:
-    get:
-      tags:
-        - service_status
-      security:
-        - bearerAuth: []
-      summary: Show a service status
-      description: Show full data of a specific service status
-      operationId: showAServiceStatus
-      parameters:
-        - in: path
-          name: serviceStatusId
-          schema:
-            type: string
-            format: uuid
-          required: true
-          description: UUID of the service status to show
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseOkSuccess'
-        500:
-          description: error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-  /services:
-    get:
-      tags:
-        - service
-      security:
-        - bearerAuth: []
-      summary: Get services
-      description: Get services
-      operationId: indexService
-      parameters:
-        - in: query
-          name: order
-          schema:
-            type: string
-            enum:
-              - asc
-              - desc
-        - in: query
-          name: per_page
-          schema:
-            type: string
-            example: 15
-        - in: query
-          name: page
-          schema:
-            type: string
-            example: 1
-        - in: query
-          name: name
-          schema:
-            type: string
-            example: John
-        - in: query
-          name: start_appointment_date
-          schema:
-            type: string
-            example: "2023-02-01"
-        - in: query
-          name: end_appointment_date
-          schema:
-            type: string
-            example: "2023-02-27"
-        - in: query
-          name: start_created_at
-          schema:
-            type: string
-            example: "2023-02-01"
-        - in: query
-          name: end_created_at
-          schema:
-            type: string
-            example: "2023-02-27"
-        - in: query
-          name: status_id
-          schema:
-            type: string
-            format: uuid
-        - in: query
-          name: event_id
-          schema:
-            type: string
-            format: uuid
-        - in: query
-          name: visitor_id
-          schema:
-            type: string
-            format: uuid
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseOkPaginatedSuccess'
-        500:
-          description: error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-    post:
-      tags:
-        - service
-      security:
-        - bearerAuth: []
-      summary: Insert a new service
-      description: Insert a new service
-      operationId: addAService
-      requestBody:
-        description: Service payload
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: string
-                  format: json
-                  example: {"status_id": "98056ebc-1da7-4dae-b04a-6c597935b460","description": "true","observation": "Obs","appointment_date": "2023-08-01","event_id": "573c482a-4474-419e-9057-170712904f82","visitor_id": "d69cbb77-c393-430d-b05f-f7ac499a5fd6","unity_id": "3f727432-b9bb-4e76-862c-47b4e304ad6f"}
-                file:
-                  type: string
-                  format: binary
-      responses:
-        201:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseCreatedSuccess'
-        500:
-          description: error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-
 components:
   schemas:
     ApiResponseOkSuccess:
@@ -744,10 +338,10 @@ components:
           example: 500
         message:
           type: string
-    IndexVisitorResponseSucess:
+    IndexOrdersResponseSucess:
       type: object
       properties:
-        page:
+        code:
           type: integer
           example: 1
         size:
@@ -761,406 +355,140 @@ components:
           items:
             type: object
             properties:
-              id:
-                type: int64
-                example: 1
-              name:
-                type: string
-                example: Mouse
-              quantity:
-                type: number
-                example: 1
-              price:
-                type: number
-                format: double
-                example: 15.50
-              merchant_id:
-                type: int32
-                example: 1
-              merchant:
+              orders:
                 type: object
                 properties:
-                  id:
+                  current_page:
                     type: int32
                     example: 1
-                  name:
-                    type: string
-                    example: Comerciante 1
-    IndexVisitorCategoryResponseSucess:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: int32
+                          example: 1
+                        customer_id:
+                          type: int32
+                          example: 1
+                        order_status_id:
+                          type: int32
+                          example: 1
+                        orderStatus:
+                          type: object
+                          properties:
+                            id:
+                              type: int32
+                              example: 1
+                            name:
+                              type: string
+                              example: Aguardando Aprovacao
+                        customer:
+                          type: object
+                          properties:
+                            id:
+                              type: int32
+                              example: 1
+                            customer_name:
+                              type: string
+                              example: Cliente 1
+                        orderItem:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              product_id:
+                                type: int32
+                                example: 1
+                              order_id:
+                                type: int32
+                                example: 1
+                              quantity:
+                                type: number
+                                format: double
+                                example: 1
+                              sales_price:
+                                type: number
+                                format: double
+                                example: 15.00
+    AuthLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: admin123@example.com
+        password:
+          type: string
+          example: "ihold#1234"
+    StoreProduct:
+      type: object
+      required:
+        - product_status_id
+        - merchant_id
+        - name
+        - price
+      properties:
+        product_status_id:
+          type: int32
+          example: 1
+        merchant_id:
+           type: int32
+           example: 1
+        name:
+          type: string
+          example: Caderno Universitario
+        price:
+          type: number
+          format: double
+          example: "17.80"
+    UpdateProduct:
+      type: object
+      required:
+        - product_status_id
+        - merchant_id
+        - name
+        - price
+      properties:
+        product_status_id:
+          type: int32
+          example: 1
+        merchant_id:
+           type: int32
+           example: 1
+        name:
+          type: string
+          example: Caderno Universitario
+        price:
+          type: number
+          format: double
+          example: "15.80"
+    StoreOrder:
       type: object
       properties:
-        page:
-          type: integer
-          format: int32
-          example: 1
-        size:
-          type: integer
-          format: int32
-          example: 15
-        total:
-          type: integer
-          format: int32
-          example: 1
-        data:
+        order:
+          type: object
+          properties:
+            order_status_id:
+              type: int32
+              example: 1
+            customer_id:
+              type: int32
+              example: 1
+        products:
           type: array
           items:
             type: object
             properties:
-              id:
-                type: string
-                format: uuid
-              name:
-                type: string
-                example: Visitante
-    States:
-      type: string
-      enum:
-        - AC
-        - AL
-        - AP
-        - AM
-        - BA
-        - CE
-        - DF
-        - ES
-        - GO
-        - MA
-        - MT
-        - MS
-        - MG
-        - PA
-        - PB
-        - PR
-        - PE
-        - PI
-        - RJ
-        - RN
-        - RS
-        - RO
-        - RR
-        - SC
-        - SP
-        - SE
-        - TO
-    StoreEvent:
-      type: object
-      required:
-        - title
-        - initial_date
-        - final_date
-        - description
-        - send_notification
-      properties:
-        title:
-          type: string
-          example: Some title
-        initial_date:
-          type: string
-          example: "2022-06-22 19:10:25"
-        final_date:
-          type: string
-          example: "2022-06-22 20:10:25"
-        description:
-          type: string
-          example: Some description
-        send_notification:
-          type: boolean
-          example: false
-        user_id:
-          type: string
-          format: uuid
-        unity_id:
-          type: string
-          format: uuid
-        visitor_id:
-          type: string
-          format: uuid
-    UpdateEvent:
-      type: object
-      properties:
-        title:
-          type: string
-          example: Some title
-        initial_date:
-          type: string
-          example: "2022-06-22 19:10:25"
-        final_date:
-          type: string
-          example: "2022-06-22 20:10:25"
-        description:
-          type: string
-          example: Some description
-        send_notification:
-          type: boolean
-          example: false
-        user_id:
-          type: string
-          format: uuid
-        unity_id:
-          type: string
-          format: uuid
-        visitor_id:
-          type: string
-          format: uuid
-    StoreVisitor:
-      type: object
-      required:
-        - name
-        - has_children
-        - tag
-      properties:
-        name:
-          type: string
-          example: John Doe
-        nickname:
-          type: string
-          example: test
-        gender_id:
-          type: string
-          format: uuid
-          example: 4ae2c9f0-cf16-4a2b-9955-580d256c194d
-        date_birth:
-          type: string
-          format: date
-          example: "2000-12-12"
-        naturalness_id:
-          type: string
-          format: uuid
-          example: bdac673f-512b-48f6-a751-a39ecdcb77e0
-        profession:
-          type: string
-          example: Profession
-        schooling_id:
-          type: string
-          format: uuid
-          example: 69128e65-ac92-4366-a1fb-3ac00ff4d59b
-        rg:
-          type: integer
-          format: int32
-          example: 2222222
-        cpf:
-          type: integer
-          format: int64
-          example: 22222222222
-        sus_card:
-          type: integer
-          format: int64
-          example: 222222222222222
-        title:
-          type: string
-          example: "299999999"
-        zona:
-          type: integer
-          format: int32
-          example: 222
-        secao:
-          type: integer
-          format: int32
-          example: 2222
-        category_id:
-          type: string
-          format: uuid
-          example: a19f4a22-0553-49ac-a1c3-ca3701c3c959
-        has_children:
-          type: boolean
-        mothers_name:
-          type: string
-          example: Mary Anne
-        photo_name:
-          type: string
-          example: picture
-        photo_path:
-          type: string
-          example: picture
-        photo_type:
-          type: string
-          example: jpg
-        photo_extension:
-          type: string
-          example: JPG
-        primary_email:
-          type: string
-          format: email
-          example: test@email.com
-        secondary_email:
-          type: string
-          format: email
-          example: test2@email.com
-        tag:
-          type: string
-          example: visitor
-        department_id:
-          type: string
-          format: uuid
-          example: 2b77977c-f40c-48e7-827a-39c89912ebfd
-        political_party_id:
-          type: string
-          format: uuid
-          example: a939f490-ea21-499b-ad37-f55afdd5f057
-        entity_id:
-          type: string
-          format: uuid
-          example: 3f727432-b9bb-4e76-862c-47b4e304ad6f
-    StoreVisitorCategory:
-      type: object
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          example: John Doe
-    UpdateVisitor:
-      type: object
-      properties:
-        name:
-          type: string
-          example: John Doe
-        nickname:
-          type: string
-          example: test
-        gender_id:
-          type: string
-          format: uuid
-          example: 4ae2c9f0-cf16-4a2b-9955-580d256c194d
-        date_birth:
-          type: string
-          format: date
-          example: "2000-12-12"
-        naturalness_id:
-          type: string
-          format: uuid
-          example: bdac673f-512b-48f6-a751-a39ecdcb77e0
-        profession:
-          type: string
-          example: Profession
-        schooling_id:
-          type: string
-          format: uuid
-          example: 69128e65-ac92-4366-a1fb-3ac00ff4d59b
-        rg:
-          type: integer
-          format: int32
-          example: 2222222
-        cpf:
-          type: integer
-          format: int64
-          example: 22222222222
-        sus_card:
-          type: integer
-          format: int64
-          example: 222222222222222
-        title:
-          type: string
-          example: "222772772727"
-        zona:
-          type: integer
-          format: int32
-          example: 222
-        secao:
-          type: integer
-          format: int32
-          example: 2222
-        category_id:
-          type: string
-          format: uuid
-          example: a19f4a22-0553-49ac-a1c3-ca3701c3c959
-        has_children:
-          type: boolean
-        mothers_name:
-          type: string
-          example: Mary Anne
-        photo_name:
-          type: string
-          example: picture
-        photo_path:
-          type: string
-          example: picture
-        photo_type:
-          type: string
-          example: jpg
-        photo_extension:
-          type: string
-          example: JPG
-        primary_email:
-          type: string
-          format: email
-          example: test@email.com
-        secondary_email:
-          type: string
-          format: email
-          example: test2@email.com
-        tag:
-          type: string
-          example: visitor
-        department_id:
-          type: string
-          format: uuid
-          example: 2b77977c-f40c-48e7-827a-39c89912ebfd
-        political_party_id:
-          type: string
-          format: uuid
-          example: a939f490-ea21-499b-ad37-f55afdd5f057
-        entity_id:
-          type: string
-          format: uuid
-          example: 3f727432-b9bb-4e76-862c-47b4e304ad6f
-    IndexPlanResponseSucess:
-      type: object
-      properties:
-        code:
-          type: integer
-          example: 200
-        message:
-          type: string
-          example: Registros Encontrados
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                format: uuid
-                example: d9bb223c-a7e8-44cf-acac-ee8c7aecec2a
-              name:
-                type: string
-                example: Plano 1
-              description:
-                type: string
-                example: Descrição Plano 1
-              annual_value:
-                type: number
-                format: double
-                example: 1200.00
-              monthly_value:
-                type: number
-                format: double
-                example: 100.00
-              plan_item:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    plan_id:
-                      type: string
-                      format: uuid
-                      example: 5a28b7e3-ca52-4d1d-8e24-d60a5c34cdcb
-                    item_id:
-                      type: string
-                      format: uuid
-                      example: 4e81cae7-ed9e-4697-8792-b15098381ac7
-                    item:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                            format: uuid
-                            example: 5a28b7e3-ca52-4d1d-8e24-d60a5c34cdcb
-                          name:
-                            type: string
-                            example: 100 Whats app
+              product_id:
+                type: int32
+                example: 1
+              quantity:
+                type: int32
+                example: 2
   securitySchemes:
     bearerAuth:
       type: http

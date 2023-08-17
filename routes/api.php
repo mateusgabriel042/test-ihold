@@ -5,29 +5,30 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\MerchantController;
+use App\Http\Controllers\ProductsContoller;
+use App\Http\Controllers\OrderContoller;
 
 Route::group(['prefix' => 'auth'], function(){
-    Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-Route::apiResources([
-    'products' => ProductsContoller::class,
-    'orders' => OrderContoller::class
-]);
+
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix' => 'auth'], function(){
         Route::delete('/logout', [AuthController::class, 'logout']);
     });
 
-    Route::group(['prefix' => 'users'], function(){
+    Route::apiResources([
+        'products' => ProductsContoller::class,
+        'orders' => OrderContoller::class
+    ]);
+
+    Route::group(['prefix' => 'user'], function(){
+
         Route::get('/', [UserController::class, 'index']);
-        Route::get('/all', [UserController::class, 'all']);
-        Route::get('/search/{column}/{value}', [UserController::class, 'search']);
         Route::post('/', [UserController::class, 'store']);
         Route::put('/{id}', [UserController::class, 'update']);
         Route::get('/{id}', [UserController::class, 'show']);
-        Route::delete('multiple-deletion', [UserController::class, 'multipleDeletion']);
         Route::delete('/{id}', [UserController::class, 'destroy']);
     });
 

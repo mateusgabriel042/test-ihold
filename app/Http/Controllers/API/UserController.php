@@ -25,7 +25,7 @@ class UserController extends Controller
         $this->middleware(['permission:update-users'])->only('update');
         $this->middleware(['permission:delete-users'])->only(['destroy', 'multipleDeletion']);
     }
-    
+
     public function index() {
         try{
             $users = $this->userRepository->getAllWithPaginate();
@@ -87,7 +87,7 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request, $id) {
         if (isset($request->validator) && $request->validator->fails())
             return $this->verifyValidation($request);
-        
+
         try {
             $data = $request->all();
             if($data['password'] != null && $data['password'] != '')
@@ -112,7 +112,7 @@ class UserController extends Controller
             return $response->toResponse([]);
         }
     }
-    
+
     public function multipleDeletion(Request $request) {
         try{
             $this->userRepository->multipleDeletion($request->get('ids'));
