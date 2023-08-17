@@ -1,5 +1,6 @@
 openapi: 3.0.3
 info:
+  version: "1.0"
   title: Teste IHold
   description: |-
     Apis used in ihold test
@@ -28,6 +29,299 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseCreatedSuccess'
+        500:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+  /user:
+    get:
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      summary: Get User
+      description: Get User
+      operationId: indexUser
+
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexUserResponseSucess'
+        500:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Insert a new User
+      description: Insert a new User
+      operationId: addUser
+      requestBody:
+        description: User payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreUser'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCreatedSuccess'
+        500:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+  /user/{userId}:
+    put:
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      summary: Update a User
+      description: Update a USER
+      operationId: updateUser
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the user to update
+      requestBody:
+        description: Update payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOkSuccess'
+        500:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+    get:
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      summary: Show a User
+      description: Show full data of a specific user
+      operationId: showUser
+      parameters:
+      - in: path
+        name: userId
+        schema:
+          type: integer
+          format: int64
+        required: true
+        description: ID of the user to edit
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOkSuccess'
+        500:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+    delete:
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      summary: Delete a user
+      description: Endpoint to remove a user
+      operationId: deleteUser
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the user to be deleted
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOkSuccess'
+        500:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
+
+
+
+
+  /merchants:
+    get:
+      tags:
+        - Merchants
+      security:
+        - bearerAuth: []
+      summary: Get Merchants
+      description: Get Merchants
+      operationId: indexMerchants
+
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexMerchantResponseSucess'
+        500:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Merchants
+      summary: Insert a new Merchant
+      description: Insert a new Merchant
+      operationId: addMerchant
+      requestBody:
+        description: Merchant payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreMerchant'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCreatedSuccess'
+        500:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+  /merchants/{merchantId}:
+    put:
+      tags:
+        - Merchants
+      security:
+        - bearerAuth: []
+      summary: Update a Merchant
+      description: Update a merchant
+      operationId: updateMerchant
+      parameters:
+        - in: path
+          name: merchantId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the merchant to update
+      requestBody:
+        description: Merchant payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMerchant'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOkSuccess'
+        500:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+    get:
+      tags:
+        - Merchants
+      security:
+        - bearerAuth: []
+      summary: Show a Merchant
+      description: Show full data of a specific merchant
+      operationId: showMerchant
+      parameters:
+      - in: path
+        name: merchantId
+        schema:
+          type: integer
+          format: int64
+        required: true
+        description: ID of the merchant to edit
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOkSuccess'
+        500:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+    delete:
+      tags:
+        - Merchants
+      security:
+        - bearerAuth: []
+      summary: Delete a visitor
+      description: Endpoint to remove a Merchant
+      operationId: deleteMerchant
+      parameters:
+        - in: path
+          name: merchantId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: ID of the merchant to be deleted
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOkSuccess'
         500:
           description: error
           content:
@@ -233,7 +527,7 @@ paths:
         - Orders
       security:
         - bearerAuth: []
-      summary: Update a Products
+      summary: Update a Order
       description: Update a Order
       operationId: updateOrders
       parameters:
@@ -359,7 +653,7 @@ components:
                 type: object
                 properties:
                   current_page:
-                    type: int32
+                    type: integer
                     example: 1
                   data:
                     type: array
@@ -367,19 +661,19 @@ components:
                       type: object
                       properties:
                         id:
-                          type: int32
+                          type: integer
                           example: 1
                         customer_id:
-                          type: int32
+                          type: integer
                           example: 1
                         order_status_id:
-                          type: int32
+                          type: integer
                           example: 1
                         orderStatus:
                           type: object
                           properties:
                             id:
-                              type: int32
+                              type: integer
                               example: 1
                             name:
                               type: string
@@ -388,7 +682,7 @@ components:
                           type: object
                           properties:
                             id:
-                              type: int32
+                              type: integer
                               example: 1
                             customer_name:
                               type: string
@@ -399,10 +693,10 @@ components:
                             type: object
                             properties:
                               product_id:
-                                type: int32
+                                type: integer
                                 example: 1
                               order_id:
-                                type: int32
+                                type: integer
                                 example: 1
                               quantity:
                                 type: number
@@ -412,6 +706,194 @@ components:
                                 type: number
                                 format: double
                                 example: 15.00
+    IndexProductResponseSucess:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 1
+        size:
+          type: integer
+          example: 15
+        total:
+          type: integer
+          example: 20
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              products:
+                type: object
+                properties:
+                  current_page:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        merchant_id:
+                          type: integer
+                          example: 1
+                        product_status_id:
+                          type: integer
+                          example: 1
+                        price:
+                          type: number
+                          format: double
+                          example: 15.00     
+                        product_status:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            name:
+                              type: string
+                              example: Disponivel
+                        merchant:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            merchant_name:
+                              type: string
+                              example: Cliente 1
+                            user_id:
+                              type: integer
+                              example: 1  
+    IndexMerchantResponseSucess:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 1
+        message:
+          type: string
+          example: Listagem de comerciantes bem-sucedida
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              merchants:
+                type: object
+                properties:
+                  current_page:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name: 
+                          type: string 
+                          example: Merchant 2   
+                        user_id:
+                          type: integer
+                          example: 1
+                        user:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            full_name:
+                              type: string
+                              example: Mateus Gabriel
+                            email:
+                              type: string
+                              example: mateus@example.com  
+                            is_admin: 
+                              type: integer
+                              example: 1  
+        pagination: 
+          type: object
+          properties:
+            link: 
+              type: object
+            page:
+              type: integer
+              example: 1
+            size:
+              type: integer
+              example: 1                
+            total:
+              type: integer
+              example: 1                
+    IndexUserResponseSucess:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 1
+        message:
+          type: string
+          example: Listagem de usup bem-sucedida
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              merchants:
+                type: object
+                properties:
+                  current_page:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name: 
+                          type: string 
+                          example: Merchant 2   
+                        user_id:
+                          type: integer
+                          example: 1
+                        user:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            full_name:
+                              type: string
+                              example: Mateus Gabriel
+                            email:
+                              type: string
+                              example: mateus@example.com  
+                            is_admin: 
+                              type: integer
+                              example: 1  
+        pagination: 
+          type: object
+          properties:
+            link: 
+              type: object
+            page:
+              type: integer
+              example: 1
+            size:
+              type: integer
+              example: 1                
+            total:
+              type: integer
+              example: 1                  
     AuthLogin:
       type: object
       required:
@@ -424,6 +906,26 @@ components:
         password:
           type: string
           example: "ihold#1234"
+    StoreUser:
+      type: object
+      required:
+        - full_name
+        - is_admin
+        - email
+        - password
+      properties:
+        full_name:
+          type: string
+          example: "User Swagger"
+        is_admin:
+           type: integer
+           example: 1
+        email:
+          type: string
+          example: Caderno Universitario
+        password:
+          type: string
+          example: inf@1802
     StoreProduct:
       type: object
       required:
@@ -433,10 +935,10 @@ components:
         - price
       properties:
         product_status_id:
-          type: int32
+          type: integer
           example: 1
         merchant_id:
-           type: int32
+           type: integer
            example: 1
         name:
           type: string
@@ -445,6 +947,46 @@ components:
           type: number
           format: double
           example: "17.80"
+    StoreMerchant:
+      type: object
+      required:
+        - user_id
+        - merchant_name
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        merchant_name:
+          type: string
+          example: Merchant no Swagger
+    UpdateUser:
+      type: object
+      required:
+        - full_name
+        - is_admin
+        - email
+      properties:
+        full_name:
+          type: string
+          example: "User Swagger update"
+        is_admin:
+           type: integer
+           example: 1
+        email:
+          type: string
+          example: Caderno Universitario
+    UpdateMerchant:
+      type: object
+      required:
+        - user_id
+        - merchant_name
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        merchant_name:
+          type: string
+          example: Merchant no Swagger update      
     UpdateProduct:
       type: object
       required:
@@ -454,10 +996,10 @@ components:
         - price
       properties:
         product_status_id:
-          type: int32
+          type: integer
           example: 1
         merchant_id:
-           type: int32
+           type: integer
            example: 1
         name:
           type: string
@@ -473,10 +1015,10 @@ components:
           type: object
           properties:
             order_status_id:
-              type: int32
+              type: integer
               example: 1
             customer_id:
-              type: int32
+              type: integer
               example: 1
         products:
           type: array
@@ -484,10 +1026,10 @@ components:
             type: object
             properties:
               product_id:
-                type: int32
+                type: integer
                 example: 1
               quantity:
-                type: int32
+                type: integer
                 example: 2
   securitySchemes:
     bearerAuth:

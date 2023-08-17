@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Repositories\ProductRepository;
@@ -16,7 +17,10 @@ class ProductsContoller extends Controller
 
     public function __construct(ProductRepository $productRepository) {
         $this->productRepository = $productRepository;
-
+        $this->middleware(['permission:create-products'])->only('store');
+        $this->middleware(['permission:read-products'])->only(['index', 'search', 'show']);
+        $this->middleware(['permission:update-products'])->only('update');
+        $this->middleware(['permission:delete-products'])->only(['destroy', 'multipleDeletion']);
     }
     public function index() {
         try{
@@ -61,8 +65,22 @@ class ProductsContoller extends Controller
                 new ProductCollection($product)
             );
         } catch(\Exception $e) {
-            $responsable = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
-            return $responsable->toResponse($e);
+            $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+            return $response->toResponse($e);
+        }
+    }
+
+    public function search(String $option, $value) {
+        try {
+            $products = $this->productRepository->findByColumnLike($option, $value, ['productStatus', 'merchant']);
+            $response = new ApiResponse(Response::HTTP_OK, 'Busca de produtos bem-sucedida');
+            return $response->toResponse([
+                'merchants' => new ProductCollection($products),
+                'pagination' => $response->_transformResponseWithPagination($products),
+            ]);
+        } catch (\Exception $e) {
+            $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+            return $response->toResponse([]);
         }
     }
 
@@ -97,6 +115,17 @@ class ProductsContoller extends Controller
         } catch(\Exception $e) {
             $responsable = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $responsable->toResponse($e);
+        }
+    }
+
+    public function multipleDeletion(Request $request) {
+        try{
+            $this->productRepository->multipleDeletion($request->get('ids'));
+            $responsable = new ApiResponse(Response::HTTP_OK, 'Produtos excluidos com sucesso');
+            return $responsable->toResponse([]);
+        } catch (\Exception $e) {
+            $responsable = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+            return $responsable->toResponse([]);
         }
     }
 }

@@ -56,5 +56,15 @@ Gerar a key do projeto Laravel
 php artisan key:generate
 ```
 
+Exectuar as migrations
+```sh
+php artisan migrate
+```
+
+Executar as seeds
+```sh
+php artisan db:seed
+```
+
 Acessar o projeto
 [http://localhost:8989/swagger/index](http://localhost:8989/swagger/index)

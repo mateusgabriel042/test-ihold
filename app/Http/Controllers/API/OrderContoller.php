@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Repositories\OrderRepository;
@@ -19,7 +20,10 @@ class OrderContoller extends Controller
     public function __construct(OrderRepository $orderRepository, OrderItemRepository $orderItemRepository) {
         $this->orderRepository = $orderRepository;
         $this->orderItemRepository = $orderItemRepository;
-
+        $this->middleware(['permission:create-orders'])->only('store');
+        $this->middleware(['permission:read-orders'])->only(['index', 'search', 'show']);
+        $this->middleware(['permission:update-orders'])->only('update');
+        $this->middleware(['permission:delete-orders'])->only(['destroy', 'multipleDeletion']);
     }
     /**
      * Display a listing of the resource.

@@ -55,9 +55,7 @@ class UserController extends Controller
     }
 
     public function store(UserRegisterRequest $request) {
-        if (isset($request->validator) && $request->validator->fails())
-            return $this->verifyValidation($request);
-
+        
         try {
             $data = $request->all();
             $data['password'] = Hash::make($data['password']);
@@ -71,7 +69,7 @@ class UserController extends Controller
         }
     }
 
-    public function show($id) {
+    public function show(int $id) {
         try {
             $user = $this->userRepository->find($id);
             $response = new ApiResponse(Response::HTTP_OK, 'Usuário encontrado');
@@ -84,18 +82,16 @@ class UserController extends Controller
         }
     }
 
-    public function update(UserUpdateRequest $request, $id) {
-        if (isset($request->validator) && $request->validator->fails())
-            return $this->verifyValidation($request);
-
+    public function update(UserUpdateRequest $request, int $id) {
+        
         try {
             $data = $request->all();
             if($data['password'] != null && $data['password'] != '')
                 $data['password'] = Hash::make($data['password']);
             
             $this->userRepository->update($id, $data);
-            $user = $this->userRepository->find($id);
             $response = new ApiResponse(Response::HTTP_OK, 'Usuário atualizado com sucesso');
+            $user = $this->userRepository->find($id);
             return $response->toResponse(new UserResource($user));
         } catch(\Exception $e) {
             $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
@@ -103,7 +99,7 @@ class UserController extends Controller
         }
     }
 
-    public function destroy($id) {
+    public function destroy(int $id) {
         try{
             $this->userRepository->delete($id);
             $response = new ApiResponse(Response::HTTP_OK, 'Registro deletado com sucesso!');

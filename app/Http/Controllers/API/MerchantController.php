@@ -55,9 +55,7 @@ class MerchantController extends Controller
     }
 
     public function store(MerchantRegisterRequest $request) {
-        if (isset($request->validator) && $request->validator->fails())
-            return $this->verifyValidation($request);
-
+        
         try {
             $merchant = $this->merchantRepository->save($request->all());
 
@@ -83,13 +81,11 @@ class MerchantController extends Controller
     }
 
     public function update(MerchantUpdateRequest $request, int $id) {
-        if (isset($request->validator) && $request->validator->fails())
-            return $this->verifyValidation($request);
         
         try {
             $this->merchantRepository->update($id, $request->all());
-            $merchant = $this->merchantRepository->find($id);
             $response = new ApiResponse(Response::HTTP_OK, 'Comerciante atualizado com sucesso');
+            $merchant = $this->merchantRepository->find($id);
             return $response->toResponse(new MerchantResource($merchant));
         } catch(\Exception $e) {
             $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
