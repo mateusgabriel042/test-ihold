@@ -87,7 +87,8 @@ class MerchantController extends Controller
             return $this->verifyValidation($request);
         
         try {
-            $merchant = $this->merchantRepository->update($id, $request->all());
+            $this->merchantRepository->update($id, $request->all());
+            $merchant = $this->merchantRepository->find($id);
             $response = new ApiResponse(Response::HTTP_OK, 'Comerciante atualizado com sucesso');
             return $response->toResponse(new MerchantResource($merchant));
         } catch(\Exception $e) {
