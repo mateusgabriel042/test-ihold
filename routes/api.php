@@ -12,7 +12,6 @@ Route::group(['prefix' => 'auth'], function(){
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix' => 'auth'], function(){
         Route::delete('/logout', [AuthController::class, 'logout']);
@@ -20,26 +19,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::apiResources([
         'products' => ProductsContoller::class,
-        'orders' => OrderContoller::class
+        'orders' => OrderContoller::class,
+        'merchants' => MerchantController::class,
+        'user' => UserController::class
     ]);
 
-    Route::group(['prefix' => 'user'], function(){
-
-        Route::get('/', [UserController::class, 'index']);
-        Route::post('/', [UserController::class, 'store']);
-        Route::put('/{id}', [UserController::class, 'update']);
-        Route::get('/{id}', [UserController::class, 'show']);
-        Route::delete('/{id}', [UserController::class, 'destroy']);
-    });
-
     Route::group(['prefix' => 'merchants'], function(){
-        Route::get('/', [MerchantController::class, 'index']);
+        Route::delete('multiple-deletion', [MerchantController::class, 'multipleDeletion']);
         Route::get('/all', [MerchantController::class, 'all']);
         Route::get('/search/{column}/{value}', [MerchantController::class, 'search']);
-        Route::post('/', [MerchantController::class, 'store']);
-        Route::put('/{id}', [MerchantController::class, 'update']);
-        Route::get('/{id}', [MerchantController::class, 'show']);
-        Route::delete('multiple-deletion', [MerchantController::class, 'multipleDeletion']);
-        Route::delete('/{id}', [MerchantController::class, 'destroy']);
+        
     });
 });

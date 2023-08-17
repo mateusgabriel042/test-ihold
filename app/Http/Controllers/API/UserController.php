@@ -55,9 +55,7 @@ class UserController extends Controller
     }
 
     public function store(UserRegisterRequest $request) {
-        if (isset($request->validator) && $request->validator->fails())
-            return $this->verifyValidation($request);
-
+        
         try {
             $data = $request->all();
             $data['password'] = Hash::make($data['password']);
@@ -85,16 +83,11 @@ class UserController extends Controller
     }
 
     public function update(UserUpdateRequest $request, $id) {
-        if (isset($request->validator) && $request->validator->fails())
-            return $this->verifyValidation($request);
-
+        
         try {
-            $data = $request->all();
-            if($data['password'] != null && $data['password'] != '')
-                $data['password'] = Hash::make($data['password']);
-            
-            $user = $this->userRepository->update($id, $data);
+            $this->userRepository->update($id, $request->all());
             $response = new ApiResponse(Response::HTTP_OK, 'Usuário atualizado com sucesso');
+            $user = $this->userRepository->find($id);
             return $response->toResponse(new UserResource($user));
         } catch(\Exception $e) {
             $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
