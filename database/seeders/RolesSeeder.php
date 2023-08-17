@@ -40,7 +40,7 @@ class RolesSeeder extends Seeder
         $roleManager = Role::create(['name' => 'manager']);
         $roleAdmin->syncPermissions($permissions);
 
-        $permissionsToExclude = [4,5,6,7];
+        $permissionsToExclude = [12,14];
         $permissionsManager = array_filter($permissions, function ($key) use ($permissionsToExclude) {
             return !in_array($key, $permissionsToExclude);
         }, ARRAY_FILTER_USE_KEY);
@@ -59,7 +59,7 @@ class RolesSeeder extends Seeder
         $dataUser1 = [
             'full_name' => 'Rinaldo Peligrineli',
             'is_admin' => true,
-            'email' => 'admin123@example.com',
+            'email' => 'manager123@example.com',
             'password' => Hash::make('ihold#1234'),
         ];
         $user1 = UserRepository::createUserIfNotExist($dataUser1);

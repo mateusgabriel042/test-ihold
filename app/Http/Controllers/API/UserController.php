@@ -21,7 +21,7 @@ class UserController extends Controller
     {
         $this->userRepository = $userRepository;
         $this->middleware(['permission:create-users'])->only('store');
-        $this->middleware(['permission:read-users'])->only(['index', 'seatch', 'show']);
+        $this->middleware(['permission:read-users'])->only(['index', 'search', 'show']);
         $this->middleware(['permission:update-users'])->only('update');
         $this->middleware(['permission:delete-users'])->only(['destroy', 'multipleDeletion']);
     }
@@ -60,10 +60,10 @@ class UserController extends Controller
 
         try {
             $data = $request->all();
-            $data['password'] = Hash::make('ihold#1234');
+            $data['password'] = Hash::make($data['password']);
             $user = $this->userRepository->save($data);
 
-            $response = new ApiResponse(Response::HTTP_OK, 'Listagem de usuários bem-sucedida');
+            $response = new ApiResponse(Response::HTTP_OK, 'Registro de usuário bem-sucedida');
             return $response->toResponse(new UserResource($user));
         } catch (\Exception $e) {
             $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
@@ -74,7 +74,7 @@ class UserController extends Controller
     public function show($id) {
         try {
             $user = $this->userRepository->find($id);
-            $response = new ApiResponse(Response::HTTP_OK, 'Usuário Encontrado');
+            $response = new ApiResponse(Response::HTTP_OK, 'Usuário encontrado');
             return $response->toResponse([
                 'user' => new UserResource($user)
             ]);
@@ -91,7 +91,7 @@ class UserController extends Controller
         try {
             $data = $request->all();
             if($data['password'] != null && $data['password'] != '')
-                $data['password'] = Hash::make('ihold#1234');
+                $data['password'] = Hash::make($data['password']);
             
             $user = $this->userRepository->update($id, $data);
             $response = new ApiResponse(Response::HTTP_OK, 'Usuário atualizado com sucesso');
@@ -115,7 +115,7 @@ class UserController extends Controller
     
     public function multipleDeletion(Request $request) {
         try{
-            $result = $this->userRepository->multipleDeletion($request->get('ids'));
+            $this->userRepository->multipleDeletion($request->get('ids'));
             $response = new ApiResponse(Response::HTTP_OK, 'Registros deletados com sucesso!');
             return $response->toResponse([]);
         } catch (\Exception $e) {
