@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\MerchantController;
-use App\Http\Controllers\ProductsContoller;
-use App\Http\Controllers\OrderContoller;
+use App\Http\Controllers\API\ProductsContoller;
+use App\Http\Controllers\API\OrderContoller;
 
 Route::group(['prefix' => 'auth'], function(){
     Route::post('/login', [AuthController::class, 'login']);
