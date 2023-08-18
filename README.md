@@ -1,7 +1,7 @@
 
 # Setup Docker Para o teste iHOld com Laravel 10, php 8.2 , mysql e Nginx
 
-feactures e blibliotecas utilizadas
+feactures e bibliotecas utilizadas
 ```sh
 - Migrations
 - Seeders
@@ -9,7 +9,7 @@ feactures e blibliotecas utilizadas
 - FormRequest
 - PHPUnit
 - spatie/laravel-ignition: 2.0 (para o ACL)
-- swagger (para a documentação)
+- Swagger (para a documentação)
 ```
 
 Clone os Arquivos do Laravel
