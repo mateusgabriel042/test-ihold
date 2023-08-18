@@ -12,11 +12,15 @@ class ProductResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray($request)
     {
         return [
-            'data' => $this->collection
+            'id' => $this->id,
+            'product_status_id' => $this->product_status_id,
+            'merchant_id' => $this->merchant_id,
+            'name' => $this->name,
+            'price' => $this->price,
+            'merchant' => new MerchantResource($this->merchant),
         ];
-
     }
 }
