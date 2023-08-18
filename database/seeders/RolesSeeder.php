@@ -16,36 +16,44 @@ class RolesSeeder extends Seeder
     public function run(): void
     {
 
-        $permissions[0] = Permission::create(['name' => 'create-users']);
-        $permissions[1] = Permission::create(['name' => 'read-users']);
-        $permissions[2] = Permission::create(['name' => 'update-users']);
-        $permissions[3] = Permission::create(['name' => 'delete-users']);
 
-        $permissions[4] = Permission::create(['name' => 'create-merchants']);
-        $permissions[5] = Permission::create(['name' => 'read-merchants']);
-        $permissions[6] = Permission::create(['name' => 'update-merchants']);
-        $permissions[7] = Permission::create(['name' => 'delete-merchants']);
+        $permissions = [
+            'create-users', 'read-users', 'update-users', 'delete-users',
+            'create-merchants', 'read-merchants', 'update-merchants', 'delete-merchants',
+            'create-orders', 'read-orders', 'update-orders', 'delete-orders',
+            'create-products', 'read-products', 'update-products', 'delete-products'
+        ];
 
-        $permissions[8] = Permission::create(['name' => 'create-orders']);
-        $permissions[9] = Permission::create(['name' => 'read-orders']);
-        $permissions[10] = Permission::create(['name' => 'update-orders']);
-        $permissions[11] = Permission::create(['name' => 'delete-orders']);
+        foreach ($permissions as $key => $permission) {
+            $findPermission = Permission::where('name', '=', $permission)->get()->first();
+            if ($findPermission == null) {
+                Permission::create(['name' => $permission]);
+            }
+        }
 
-        $permissions[12] = Permission::create(['name' => 'create-products']);
-        $permissions[13] = Permission::create(['name' => 'read-products']);
-        $permissions[14] = Permission::create(['name' => 'update-products']);
-        $permissions[15] = Permission::create(['name' => 'delete-products']);
-
-        $roleAdmin = Role::create(['name' => 'admin']);
-        $roleManager = Role::create(['name' => 'manager']);
-        $roleAdmin->syncPermissions($permissions);
+        $roles = ['admin', 'manager'];
 
         $permissionsToExclude = [12,14];
         $permissionsManager = array_filter($permissions, function ($key) use ($permissionsToExclude) {
             return !in_array($key, $permissionsToExclude);
         }, ARRAY_FILTER_USE_KEY);
 
-        $roleManager->syncPermissions($permissionsManager);
+        foreach ($roles as $key => $role) {
+            $findRole = Role::where('name', '=', $role)->get()->first();
+            if ($findRole == null) {
+                $findRole = Role::create(['name' => $role]);
+            }
+            switch ($findRole->name) {
+                case 'admin':
+                    $findRole->syncPermissions($permissions);
+                    break;
+                case 'manager':
+                    $findRole->syncPermissions($permissionsManager);
+                default:
+                    break;
+            }
+            
+        }
 
         $dataUser1 = [
             'full_name' => 'Mateus Gabriel',
@@ -54,15 +62,15 @@ class RolesSeeder extends Seeder
             'password' => Hash::make('ihold#1234'),
         ];
         $user1 = UserRepository::createUserIfNotExist($dataUser1);
-        $user1->assignRole($roleAdmin);
+        $user1->assignRole('admin');
 
-        $dataUser1 = [
+        $dataUser2 = [
             'full_name' => 'Rinaldo Peligrineli',
-            'is_admin' => true,
+            'is_admin' => false,
             'email' => 'manager123@example.com',
             'password' => Hash::make('ihold#1234'),
         ];
-        $user1 = UserRepository::createUserIfNotExist($dataUser1);
-        $user1->assignRole($roleAdmin);
+        $user2 = UserRepository::createUserIfNotExist($dataUser2);
+        $user2->assignRole('manager');
     }
 }
