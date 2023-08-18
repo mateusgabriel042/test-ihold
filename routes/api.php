@@ -14,7 +14,7 @@ Route::group(['prefix' => 'auth'], function(){
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::group(['prefix' => 'auth'], function(){
-        Route::delete('/logout', [AuthController::class, 'logout']);
+        Route::post('/logout', [AuthController::class, 'logout']);
     });
 
     Route::apiResources([
