@@ -1,7 +1,16 @@
 
 # Setup Docker Para o teste iHOld com Laravel 10, php 8.2 , mysql e Nginx
-[Assine a Academy, e Seja VIP!](https://academy.especializati.com.br)
 
+feactures e blibliotecas utilizadas
+```sh
+- Migrations
+- Seeders
+- Resource
+- FormRequest
+- PHPUnit
+- spatie/laravel-ignition: 2.0 (para o ACL)
+- swagger (para a documentação)
+```
 
 Clone os Arquivos do Laravel
 ```sh
@@ -66,5 +75,10 @@ Executar as seeds
 php artisan db:seed
 ```
 
+Execute o comando para testar a aplicação com o PHPUnit
+```sh
+php artisan test
+```
+
 Acessar o projeto
-[http://localhost:8989/swagger/index](http://localhost:8989/swagger/index)
+[http://localhost:8989/swagger/index](http://localhost:8000/swagger/index)
