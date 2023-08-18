@@ -81,7 +81,6 @@ class MerchantController extends Controller
     }
 
     public function update(MerchantUpdateRequest $request, int $id) {
-        
         try {
             $this->merchantRepository->update($id, $request->all());
             $response = new ApiResponse(Response::HTTP_OK, 'Comerciante atualizado com sucesso');

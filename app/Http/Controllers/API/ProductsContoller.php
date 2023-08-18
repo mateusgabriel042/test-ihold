@@ -9,6 +9,7 @@ use App\Repositories\ProductRepository;
 use App\Http\Responses\ApiResponse;
 use App\Http\Resources\ProductCollection;
 use App\Http\Requests\ProductRequest;
+use App\Http\Resources\ProductResource;
 
 class ProductsContoller extends Controller
 {
@@ -25,13 +26,13 @@ class ProductsContoller extends Controller
     public function index() {
         try{
             $products = $this->productRepository->getAllWithPaginate(['productStatus', 'merchant']);
-            $response = new ApiResponse(Response::HTTP_OK, 'Listagem de produtos bem-sucedida', true);
+            $response = new ApiResponse(Response::HTTP_OK, 'Listagem de produtos bem-sucedida');
             return $response->toResponse([
                 'products' => new ProductCollection($products),
                 'pagination' => $response->_transformResponseWithPagination($products),
             ]);
         } catch (\Exception $e) {
-            $response = new ApiResponse(RESPONSE::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage(), false);
+            $response = new ApiResponse(RESPONSE::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $response->toResponse([]);
         }
     }
@@ -45,7 +46,7 @@ class ProductsContoller extends Controller
         try {
             $product = $this->productRepository->save($request->all());
             $responsable = new ApiResponse(Response::HTTP_CREATED, 'Produto adicionado com sucesso');
-            return $responsable->toResponse($product);
+            return $responsable->toResponse(new ProductResource($product));
         } catch(\Exception $e) {
             $responsable = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
             return $responsable->toResponse($e);
@@ -62,7 +63,7 @@ class ProductsContoller extends Controller
 
             $response = new ApiResponse(Response::HTTP_OK, 'Produto encontrado');
             return $response->toResponse(
-                new ProductCollection($product)
+                new ProductResource($product)
             );
         } catch(\Exception $e) {
             $response = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
@@ -95,7 +96,7 @@ class ProductsContoller extends Controller
             $product = $this->productRepository->find($id);
             $response = new ApiResponse(Response::HTTP_OK, 'Produto atualizado');
             return $response->toResponse(
-                new ProductCollection($product)
+                new ProductResource($product)
             );
         } catch(\Exception $e) {
             $responsable = new ApiResponse(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
